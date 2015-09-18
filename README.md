@@ -21,6 +21,7 @@ Built on top of the experimental mobile package
 	* Consider reworking each part into its own folder for easier dependency management
 	* Uncouple files
 	* Look into web / console support options
+	* Reconsider the public/private methods of the current engine and sprite implementations
 * Engine:
 	* Work in one resolution that scales automatically for different devices
 	* Try to integrate app package into engine
