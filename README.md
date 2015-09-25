@@ -8,12 +8,15 @@ Built on top of the experimental mobile package
 
 * Engine:
 	* Simplified process to get up and running
+	* Work in one resolution that scales automatically for different devices
 * Sprites:
 	* Animations
+		* Simplified from standard process for textures
 	* Built-in movement functions
 		* Translate/MoveTo
 		* Rotation (in place)
 		* Scale
+		* Velocity
 	
 	
 ### Todos:
@@ -23,12 +26,10 @@ Built on top of the experimental mobile package
 	* Look into web / console support options
 	* Reconsider the public/private methods of the current engine and sprite implementations
 * Engine:
-	* Work in one resolution that scales automatically for different devices
 	* Try to integrate app package into engine
 		* Might require writing wrappers for events
 	* Check for areas to improve performance with concurrency
 * Sprites:
-	* Simplify animation process
 	* More options for movement
 		* Choosing what to rotate around
 		* Flip horizontal/vertical

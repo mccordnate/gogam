@@ -4,7 +4,13 @@ import (
 	"time"
 
 	"golang.org/x/image/math/f32"
+	"golang.org/x/mobile/event/touch"
+
+	"golang.org/x/mobile/asset"
 	spr "golang.org/x/mobile/exp/sprite"
+	"image"
+	_ "image/png"
+	"log"
 )
 
 type Sprite struct {
@@ -52,7 +58,13 @@ func (s *Sprite) GetCurrentAnimation() *Animation {
 	}
 }
 
-func (s *Sprite) MoveTo(x, y float32) {
+func (s *Sprite) MoveToTouch(e touch.Event, eng *Engine) {
+	w, h := eng.GetScreenScalers()
+	s.X = (e.X / eng.arranger.sz.PixelsPerPt) / w
+	s.Y = (e.Y / eng.arranger.sz.PixelsPerPt) / h
+}
+
+func (s *Sprite) MoveToPoint(x, y float32) {
 	s.X = x
 	s.Y = y
 }
@@ -126,9 +138,28 @@ type AnimationFrame struct {
 	Duration time.Duration
 }
 
-func NewAnimationFrame(t *spr.SubTex, duration int) *AnimationFrame {
+func NewAnimationFrame(t *spr.Texture, r image.Rectangle, duration int) *AnimationFrame {
+	sub := &spr.SubTex{*t, r}
 	af := new(AnimationFrame)
-	af.Texture = t
+	af.Texture = sub
 	af.Duration = time.Duration(duration)
 	return af
+}
+
+func NewTexture(path string, eng *Engine) *spr.Texture {
+	ass, err := asset.Open(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer ass.Close()
+	i, _, err := image.Decode(ass)
+	if err != nil {
+		log.Fatal(err)
+	}
+	t, err := eng.LoadTexture(i)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return &t
 }

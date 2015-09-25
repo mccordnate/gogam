@@ -5,7 +5,6 @@ import (
 	"math"
 	"time"
 
-	//"golang.org/x/mobile/app"
 	"golang.org/x/mobile/event/size"
 	"golang.org/x/mobile/exp/f32"
 	s "golang.org/x/mobile/exp/sprite"
@@ -63,6 +62,12 @@ func (e *Engine) Render(sz size.Event) {
 	e.eng.Render(e.scene, now, sz)
 }
 
+func (e *Engine) GetScreenScalers() (float32, float32) {
+	w := float32(e.arranger.sz.WidthPx) / float32(e.screenWidth)
+	h := float32(e.arranger.sz.HeightPx) / float32(e.screenHeight)
+	return w, h
+}
+
 type arrangerFunc struct {
 	eng *Engine
 	sz  *size.Event
@@ -73,8 +78,7 @@ func (a *arrangerFunc) Arrange(e s.Engine, n *s.Node, t clock.Time) {
 	frameTime := float32(t - a.eng.lastUpdate)
 	updatePosition(sprite, frameTime)
 
-	screenWidthScaler := float32(a.sz.WidthPx) / float32(a.eng.screenWidth)
-	screenHeightScaler := float32(a.sz.HeightPx) / float32(a.eng.screenHeight)
+	screenWidthScaler, screenHeightScaler := a.eng.GetScreenScalers()
 	actualScaleX := screenWidthScaler * sprite.ScaleX
 	actualScaleY := screenHeightScaler * sprite.ScaleY
 	actualPositionX := screenWidthScaler * sprite.X
@@ -89,6 +93,7 @@ func (a *arrangerFunc) Arrange(e s.Engine, n *s.Node, t clock.Time) {
 	}
 
 	matrix.Translate(&matrix, actualPositionX, actualPositionY)
+	//matrix.Translate(&matrix, sprite.X, sprite.Y)
 	matrix.Rotate(&matrix, r)
 	matrix.Scale(&matrix, actualScaleX, actualScaleY)
 	e.SetTransform(n, matrix)

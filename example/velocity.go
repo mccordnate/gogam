@@ -4,14 +4,11 @@ import (
 	"github.com/mccordnate/gogam"
 	"golang.org/x/image/math/f32"
 	"golang.org/x/mobile/app"
-	"golang.org/x/mobile/asset"
 	"golang.org/x/mobile/event/key"
 	"golang.org/x/mobile/event/paint"
 	"golang.org/x/mobile/event/size"
-	sproot "golang.org/x/mobile/exp/sprite"
 	"image"
 	_ "image/png"
-	"log"
 )
 
 var eng *gogam.Engine
@@ -42,31 +39,33 @@ func onPaint(sz size.Event) {
 }
 
 func load() {
+	// Initialize the engine with a working resolution of 1920x1080
 	eng = gogam.NewEngine(1920, 1080)
 
+	// Initialize a cat sprite at position (20,20)
 	cat = gogam.NewSprite(20, 20)
-	ass, err := asset.Open("cat.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer ass.Close()
-	i, _, err := image.Decode(ass)
-	if err != nil {
-		log.Fatal(err)
-	}
-	t, err := eng.LoadTexture(i)
-	if err != nil {
-		log.Fatal(err)
-	}
-	sub := &sproot.SubTex{t, image.Rect(0, 0, 139, 119)}
-	stillAf1 := gogam.NewAnimationFrame(sub, 1000)
+
+	// Grab the cat texture
+	t := gogam.NewTexture("cat.png", eng)
+
+	// Get the cat's frame from the texture
+	stillAf1 := gogam.NewAnimationFrame(t, image.Rect(0, 0, 139, 119), 1000)
+
+	// Create an animation from the frame
 	a := gogam.NewAnimation([]*gogam.AnimationFrame{stillAf1})
+
+	// Add animation as a possible animation for the cat called "still"
 	cat.AddAnimation("still", a)
+
+	// Set the "still" animation as currently active animation
 	cat.SetAnimation("still")
 
+	// Tell the engine to draw the cat
 	eng.Draw(cat)
 }
 
+// Move based on key press
+// Creates smooth movement by changing the velocity of the cat
 func move(k key.Event) {
 	if k.Code == key.CodeLeftArrow || k.Code == key.CodeA {
 		if k.Direction == key.DirPress {
