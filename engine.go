@@ -18,6 +18,7 @@ type Engine struct {
 	screenWidth  int
 	screenHeight int
 	startTime    time.Time
+	lastUpdate   clock.Time
 	eng          s.Engine
 	scene        *s.Node
 	arranger     *arrangerFunc
@@ -69,12 +70,15 @@ type arrangerFunc struct {
 
 func (a *arrangerFunc) Arrange(e s.Engine, n *s.Node, t clock.Time) {
 	sprite, _ := a.eng.sprites[n]
+	frameTime := float32(t - a.eng.lastUpdate)
+	updatePosition(sprite, frameTime)
+
 	screenWidthScaler := float32(a.sz.WidthPx) / float32(a.eng.screenWidth)
 	screenHeightScaler := float32(a.sz.HeightPx) / float32(a.eng.screenHeight)
 	actualScaleX := screenWidthScaler * sprite.ScaleX
 	actualScaleY := screenHeightScaler * sprite.ScaleY
-	//actualPositionX := screenWidthScaler * sprite.X
-	//actualPositionY := screenHeightScaler * sprite.Y
+	actualPositionX := screenWidthScaler * sprite.X
+	actualPositionY := screenHeightScaler * sprite.Y
 
 	e.SetSubTex(n, *sprite.GetCurrentFrame().Texture)
 
@@ -84,8 +88,15 @@ func (a *arrangerFunc) Arrange(e s.Engine, n *s.Node, t clock.Time) {
 		{0, 1, 0},
 	}
 
-	matrix.Translate(&matrix, sprite.X, sprite.Y)
+	matrix.Translate(&matrix, actualPositionX, actualPositionY)
 	matrix.Rotate(&matrix, r)
 	matrix.Scale(&matrix, actualScaleX, actualScaleY)
 	e.SetTransform(n, matrix)
+
+	a.eng.lastUpdate = t
+}
+
+func updatePosition(sprite *Sprite, frameTime float32) {
+	sprite.X += frameTime * sprite.Velocity[0]
+	sprite.Y += frameTime * sprite.Velocity[1]
 }

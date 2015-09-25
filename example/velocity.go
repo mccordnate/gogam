@@ -2,12 +2,13 @@ package main
 
 import (
 	"github.com/mccordnate/gogam"
+	"golang.org/x/image/math/f32"
 	"golang.org/x/mobile/app"
 	"golang.org/x/mobile/asset"
+	"golang.org/x/mobile/event/key"
 	"golang.org/x/mobile/event/paint"
 	"golang.org/x/mobile/event/size"
 	sproot "golang.org/x/mobile/exp/sprite"
-	"golang.org/x/mobile/gl"
 	"image"
 	_ "image/png"
 	"log"
@@ -26,6 +27,8 @@ func main() {
 			case paint.Event:
 				onPaint(sz)
 				a.EndPaint(e)
+			case key.Event:
+				move(e)
 			}
 		}
 	})
@@ -35,7 +38,6 @@ func onPaint(sz size.Event) {
 	if eng == nil {
 		load()
 	}
-	move()
 	eng.Render(sz)
 }
 
@@ -65,6 +67,33 @@ func load() {
 	eng.Draw(cat)
 }
 
-func move() {
-	cat.Translate(0, 1)
+func move(k key.Event) {
+	if k.Code == key.CodeLeftArrow || k.Code == key.CodeA {
+		if k.Direction == key.DirPress {
+			cat.AddVelocity(f32.Vec2{-5, 0})
+		} else if k.Direction == key.DirRelease {
+			cat.AddVelocity(f32.Vec2{5, 0})
+		}
+	}
+	if k.Code == key.CodeRightArrow || k.Code == key.CodeD {
+		if k.Direction == key.DirPress {
+			cat.AddVelocity(f32.Vec2{5, 0})
+		} else if k.Direction == key.DirRelease {
+			cat.AddVelocity(f32.Vec2{-5, 0})
+		}
+	}
+	if k.Code == key.CodeUpArrow || k.Code == key.CodeW {
+		if k.Direction == key.DirPress {
+			cat.AddVelocity(f32.Vec2{0, -5})
+		} else if k.Direction == key.DirRelease {
+			cat.AddVelocity(f32.Vec2{0, 5})
+		}
+	}
+	if k.Code == key.CodeDownArrow || k.Code == key.CodeS {
+		if k.Direction == key.DirPress {
+			cat.AddVelocity(f32.Vec2{0, 5})
+		} else if k.Direction == key.DirRelease {
+			cat.AddVelocity(f32.Vec2{0, -5})
+		}
+	}
 }

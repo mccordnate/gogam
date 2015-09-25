@@ -3,6 +3,7 @@ package gogam
 import (
 	"time"
 
+	"golang.org/x/image/math/f32"
 	spr "golang.org/x/mobile/exp/sprite"
 )
 
@@ -12,6 +13,7 @@ type Sprite struct {
 	ScaleX        float32
 	ScaleY        float32
 	Rotation      float32
+	Velocity      f32.Vec2
 	AnimStartTime time.Time
 	Animations    map[string]*Animation
 	CurrentAnim   string
@@ -73,6 +75,15 @@ func (s *Sprite) Rotate(d float32) {
 	for s.Rotation > 360 {
 		s.Rotation -= 360
 	}
+}
+
+func (s *Sprite) SetVelocity(v f32.Vec2) {
+	s.Velocity = v
+}
+
+func (s *Sprite) AddVelocity(v f32.Vec2) {
+	s.Velocity[0] += v[0]
+	s.Velocity[1] += v[1]
 }
 
 type Animation struct {
